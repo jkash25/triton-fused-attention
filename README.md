@@ -180,17 +180,6 @@ Expected results on A100 (batch=4, heads=32, d=64):
 
 Speedup increases with sequence length because the memory traffic reduction becomes more significant.
 
-## Key Interview Talking Points
-
-1. **"Why is standard attention memory-bound?"** — It materializes an N×N matrix to HBM. For N=4096, d=64, the attention matrix is 64× larger than Q/K/V combined. The hardware can compute faster than it can move this data.
-
-2. **"How does tiling fix this?"** — By processing BLOCK_M × BLOCK_N tiles at a time, the attention scores live in SRAM (164 KB per SM on A100) instead of HBM. Total FLOPS don't change, but memory traffic drops from O(N²) to O(N).
-
-3. **"What's the online softmax trick?"** — Softmax needs the row-wise max for numerical stability, but we process K in blocks. The online algorithm maintains a running max and rescales previous accumulators when a new max is found. This gives exact results in a single pass.
-
-4. **"When does the fused kernel NOT help?"** — At very short sequences (N < 128), the attention matrix fits in SRAM anyway, so there's no memory traffic savings. The overhead of the tiled approach hurts. Also, the kernel overhead dominates at small problem sizes.
-
-5. **"How would this differ on custom silicon (like Dojo)?"** — The algorithm is the same; what changes is the SRAM size (determines block sizes), memory bandwidth (determines ridge point), and compute throughput. Larger SRAM → bigger tiles → fewer HBM accesses → even better performance.
 
 ## Extending This Project
 
