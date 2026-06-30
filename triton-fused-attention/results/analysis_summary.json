@@ -1,0 +1,16 @@
+{
+  "hardware": "NVIDIA A100 80GB",
+  "config": {
+    "batch": 4,
+    "num_heads": 32,
+    "head_dim": 64,
+    "causal": false
+  },
+  "kernel_info": {
+    "name": "TritonFlashAttention",
+    "algorithm": "FlashAttention (online softmax, tiled)",
+    "memory_complexity": "O(N) \u2014 no materialized attention matrix",
+    "compute_complexity": "O(N\u00b2d)"
+  },
+  "ridge_point_flops_per_byte": 153.01618440411966
+}
